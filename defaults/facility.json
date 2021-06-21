@@ -1,0 +1,7 @@
+{
+    "facility_id": "999",
+    "facility_name": "Heroku Stating",
+    "environment": "dev app", 
+    "rfid_login": false, 
+    "normal_login": true 
+}

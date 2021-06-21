@@ -1,0 +1,584 @@
+[
+    {
+        "id": "3cfae1ad.e2562e",
+        "type": "tab",
+        "label": "Egg collection",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "31e81d3c.770d72",
+        "type": "function",
+        "z": "3cfae1ad.e2562e",
+        "name": "Dummy data",
+        "func": "msg.payload = [{\n    \"series\": [\"Ch1\", \"C2\", \"C3\" ],\n    \"data\": [ [5,6,9], [3,8,5], [6,7,2] ],\n    \"labels\": [ \"Mon\", \"Tue\", \"Wed\" ]\n}]\nmsg.ui_control = {\n     options: {\n        scales: {\n            xAxes: [{\n                stacked: true\n            }],\n            yAxes: [{\n                stacked: true\n            }]\n        }\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1450,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "23baa106.04bede",
+        "type": "function",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "func": "var label = []\nvar series = []\nvar data = []\n\nvar target = flow.get('target');\n\n//initialize date for labels\nvar today = new Date()\nyear = today.getFullYear();\nvar oneWeekAgo = new Date()\noneWeekAgo.setDate(today.getDate()-6)\n\nfor(let i =0; i<7; i++){\n    let date = new Date();\n    date.setDate(oneWeekAgo.getDate()+i)\n    label.push(date.toString().substring(4,10))\n}\n\n//insert and sort series\nfor(let row of msg.payload){\n    if(!series.includes(row.key[1]))\n        series.push(row.key[1])\n}\nseries.sort();\n\n//push empty data into data\nfor(var i =0; i<series.length; i++){\n    data.push([]);\n    for(var j =0; j<label.length; j++){\n        data[i].push(0);\n    }\n}\n\n//store egg trap in into data\nfor(let row of msg.payload){\n    let date = new Date(row.key[0])\n    data[series.indexOf(row.key[1])][label.indexOf(date.toString().substring(4,10))]= data[series.indexOf(row.key[1])][label.indexOf(date.toString().substring(4,10))] +  row.value\n}\n\n\n//calculate total collection today\nvar totalToday = 0;\nfor(let i = 0; i<series.length; i++){\n    totalToday = totalToday + data[i][label.length - 1]\n}\n\n//store chart data into msg\nvar newMsg = {}\nnewMsg.payload= {\n    \"series\": series,\n    \"data\": data,\n    \"labels\": label};\n    \nnewMsg.total = totalToday\nnewMsg.target = target;\n\n//store data for level element\nmsg1 = {};\nmsg1.payload = (totalToday/target)*100\n\n\nreturn [newMsg, msg1]\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 920,
+        "y": 320,
+        "wires": [
+            [
+                "aec9154c.9787f8"
+            ],
+            [
+                "45d75bc7.62d384"
+            ]
+        ]
+    },
+    {
+        "id": "6f8fe0fc.4b1be",
+        "type": "cloudantplus in",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "cloudant": "89ef28e6.4ac598",
+        "database": "insectdata",
+        "service": "_ext_",
+        "search": "_view_",
+        "design": "forms",
+        "index": "egg-trap-collection",
+        "x": 610,
+        "y": 320,
+        "wires": [
+            [
+                "d5ee0d33.e0e78"
+            ]
+        ]
+    },
+    {
+        "id": "d5ee0d33.e0e78",
+        "type": "json",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "property": "payload.payload",
+        "action": "",
+        "pretty": false,
+        "x": 770,
+        "y": 320,
+        "wires": [
+            [
+                "23baa106.04bede"
+            ]
+        ]
+    },
+    {
+        "id": "2e037d29.979842",
+        "type": "comment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Remove once stable",
+        "info": "",
+        "x": 1450,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "3d780d26.c9bfb2",
+        "type": "ui_text",
+        "z": "3cfae1ad.e2562e",
+        "group": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last update",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 650,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "7a6c138f.5f8d8c",
+        "type": "change",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "target",
+                "pt": "flow",
+                "to": "target",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 920,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f0ced76f.c505c8",
+        "type": "inject",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "props": [
+            {
+                "p": "target",
+                "v": "300",
+                "vt": "num"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.1",
+        "topic": "RED",
+        "x": 570,
+        "y": 760,
+        "wires": [
+            [
+                "7a6c138f.5f8d8c",
+                "4e355b19.698624"
+            ]
+        ]
+    },
+    {
+        "id": "f824eee5.14b9e",
+        "type": "ui_template",
+        "z": "3cfae1ad.e2562e",
+        "group": "",
+        "name": "Mixed Charts",
+        "order": 2,
+        "width": 24,
+        "height": 15,
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "x": 1450,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "aec9154c.9787f8",
+        "type": "function",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "func": "//specify available bar color\nvar linecolors = ['rgb(31,119,180)','rgb(174,199,232)','rgb(44,160,44)',\n'rgb(152,223,138)','rgb(197,176,213)','rgb(255,152,150)','rgb(214,39,40)',\n'rgb(255,127,14)']\n\nvar datasets = []\n//load chart labels (date)\nlabels = msg.payload.labels;\n\n//load line chart data (target)\ntarget = msg.target;\n\n//push line chart data to fit the label\ntargetLine = []\nfor(let i=0; i< labels.length;i++){\n    targetLine.push(target);\n}\n\n//set target line color\nvar totalToday = msg.total\nvar color = \"rgb(0,0,0)\"\nif(totalToday < target && totalToday > (target*10)/100){\n    color = \"rgb(255,165,0)\"\n}\nelse if(totalToday >= target){\n    color = \"rgb(34,139,34)\"\n}\nelse{\n    color = \"rgb(255,0,0)\"\n}\n\n//data for line chart\nlineData = {\n    type:'line',\n    label: 'Target',\n    backgroundColor: color,\n    borderColor: color,\n    data: targetLine,\n    yAxisID: 'left-y-axis',\n    steppedLine: false,\n    fill: false,\n    borderWidth: 1\n}\ndatasets.push(lineData);\n\n//data for bar chart\nfor(let i=0; i< msg.payload.series.length; i++){\n    data = {\n        type: 'bar',\n        label: msg.payload.series[i],\n        backgroundColor: linecolors[i],\n        borderColor: linecolors[i],\n        data: msg.payload.data[i],\n        yAxisID: 'left-y-axis',\n        barPercentage: 0.5,\n        barThickness: 6,\n        maxBarThickness: 8,\n        minBarLength: 2,\n    }\n    datasets.push(data);\n}\n\n//store data for charts\nmsg.payload ={}\nmsg.payload.datasets = JSON.stringify(datasets);\nmsg.payload.labels = JSON.stringify(labels)\n\n//store data for other big label in dashboard\nmsg1 ={}\nmsg1.payload ={\n    target: target,\n    current: totalToday,\n    color: color\n}\nreturn [msg, msg1];\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1080,
+        "y": 280,
+        "wires": [
+            [
+                "84a48be.46e6478"
+            ],
+            [
+                "578b825c.bab3dc",
+                "7ffc6a29.07c5a4"
+            ]
+        ]
+    },
+    {
+        "id": "84a48be.46e6478",
+        "type": "template",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "field": "template",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<canvas id=\"myChart\" width=1248 height =780 ></canvas>\n<script>\nvar ctx = document.getElementById('myChart').getContext('2d');\nvar chart = new Chart(ctx, {\n    // The type of chart we want to create\n    type: 'bar',\n\n    // The data for our dataset\n    data: {\n        labels: {{{payload.labels}}},\n        datasets: {{{payload.datasets}}}\n    },\n\n    // Configuration options go here\n    options: {\n        title:{\n            display: true,\n            text: \"Egg collection per chamber\",\n            fontSize: 20\n        },\n        legend: {\n          display: true,\n          position: 'top',\n          labels: {\n            boxWidth: 10,\n            fontColor: \"#000080\",\n          }\n        },\n        scales: {\n            yAxes: [\n                {   stacked: true,\n                    gridLines :{display: true},\n                    id: 'left-y-axis',\n                    type: 'linear',\n                    position: 'left',\n\n                },\n            ],\n            xAxes: [\n                {   stacked:true,\n                }\n            ]\n        },\n    }\n});\n</script>\n",
+        "output": "str",
+        "x": 1280,
+        "y": 280,
+        "wires": [
+            [
+                "f824eee5.14b9e"
+            ]
+        ]
+    },
+    {
+        "id": "45d75bc7.62d384",
+        "type": "ui_level",
+        "z": "3cfae1ad.e2562e",
+        "group": "",
+        "order": 2,
+        "width": 14,
+        "height": 2,
+        "name": "",
+        "label": "",
+        "colorHi": "#17b003",
+        "colorWarn": "#ff9900",
+        "colorNormal": "#ff0000",
+        "colorOff": "#595959",
+        "min": 0,
+        "max": "100",
+        "segWarn": "",
+        "segHigh": "",
+        "unit": "%",
+        "layout": "sh",
+        "channelA": "",
+        "channelB": "",
+        "decimals": 0,
+        "animations": "soft",
+        "shape": "3",
+        "colorschema": "rainbow",
+        "textoptions": "custom",
+        "colorText": "#ff0000",
+        "fontLabel": "1",
+        "fontValue": "6",
+        "fontSmall": "2",
+        "colorFromTheme": true,
+        "textAnimations": false,
+        "hideValue": false,
+        "tickmode": "off",
+        "peakmode": false,
+        "peaktime": 3000,
+        "x": 1090,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "3c55fae4.554886",
+        "type": "ui_template",
+        "z": "3cfae1ad.e2562e",
+        "group": "",
+        "name": "Big Label: Total Egg Collected today",
+        "order": 1,
+        "width": 5,
+        "height": 3,
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "x": 1530,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "578b825c.bab3dc",
+        "type": "template",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "field": "template",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "\n<div class=\"current\">\n    Current<br>\n   {{{payload.current}}}\n</div>\n\n\n<style>\n    .current{\n        display: flex;\n        flex-wrap: wrap;\n        align-content: center;\n        justify-content: center;\n        text-align: center;\n        color: white;\n        font-size: 50px;\n        background-color: {{{payload.color}}};\n    }\n    .target{\n        background-color: green;\n        display: flex;\n        flex-wrap: wrap;\n        align-content: center;\n        justify-content: center;\n        text-align: center;\n        color: white;\n        font-size: 50px;\n    }\n</style>\n",
+        "output": "str",
+        "x": 1280,
+        "y": 340,
+        "wires": [
+            [
+                "3c55fae4.554886"
+            ]
+        ]
+    },
+    {
+        "id": "3c343cb0.98af94",
+        "type": "ui_template",
+        "z": "3cfae1ad.e2562e",
+        "group": "",
+        "name": "Big Label: Target",
+        "order": 3,
+        "width": 5,
+        "height": 3,
+        "format": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "x": 1470,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7ffc6a29.07c5a4",
+        "type": "template",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "field": "template",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "\n<div class=\"target\">\n    Target\n    <br>\n    {{{payload.target}}}\n</div>\n\n\n",
+        "output": "str",
+        "x": 1280,
+        "y": 420,
+        "wires": [
+            [
+                "3c343cb0.98af94"
+            ]
+        ]
+    },
+    {
+        "id": "bd7635fd.bf0ec8",
+        "type": "ui_ui_control",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "events": "all",
+        "x": 200,
+        "y": 320,
+        "wires": [
+            [
+                "6f8fe0fc.4b1be",
+                "43610218.f0237c"
+            ]
+        ]
+    },
+    {
+        "id": "f082f464.2112b8",
+        "type": "comment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Set target",
+        "info": "\n",
+        "x": 740,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "6ecb2647.10b708",
+        "type": "comment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Listen to Database for changes",
+        "info": "",
+        "x": 230,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "3799b554.68b6da",
+        "type": "comment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Read egg trap in and out from database",
+        "info": "",
+        "x": 670,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "53ee8c16.2478b4",
+        "type": "comment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Process the data to fit the dashboard",
+        "info": "",
+        "x": 1000,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "d0619b68.5cbe68",
+        "type": "comment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Set last update datetime",
+        "info": "",
+        "x": 530,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "7c78e600.72edfc",
+        "type": "http request",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "{{{payload}}}",
+        "tls": "",
+        "persist": true,
+        "proxy": "",
+        "authType": "bearer",
+        "x": 330,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "80857659.b83838",
+        "type": "function",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "func": "var endpoint = env.get(\"INSECT_DB\") + \"/insectdata/_changes?feed=longpoll&since=now&heartbeat=30000&timeout=60000\";\nmsg.payload = endpoint\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 160,
+        "y": 840,
+        "wires": [
+            [
+                "7c78e600.72edfc"
+            ]
+        ]
+    },
+    {
+        "id": "b35dd09f.8d1cf",
+        "type": "cloudantplus out",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "cloudant": "89ef28e6.4ac598",
+        "database": "insectdata",
+        "service": "_ext_",
+        "payonly": true,
+        "operation": "insert",
+        "x": 1200,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ba4ae713.6a6538",
+        "type": "function",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "func": "var target;\nif(msg.payload.docs.length > 0){\n    for(let doc of msg.payload.docs){\n        if(doc.target){\n            target = doc.target;\n        }\n    }\n    msg.payload = {}\n}\nelse{\n    target = msg.target;\n    msg.payload = {\n    \"target\": target,\n    \"docType\": \"settings\"\n}\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1020,
+        "y": 860,
+        "wires": [
+            [
+                "b35dd09f.8d1cf"
+            ]
+        ]
+    },
+    {
+        "id": "782400e2.ee439",
+        "type": "cloudantplus in",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "cloudant": "89ef28e6.4ac598",
+        "database": "insectdata",
+        "service": "_ext_",
+        "search": "_query_",
+        "design": "",
+        "index": "",
+        "x": 860,
+        "y": 860,
+        "wires": [
+            [
+                "ba4ae713.6a6538",
+                "cd207df6.9559a"
+            ]
+        ]
+    },
+    {
+        "id": "4e355b19.698624",
+        "type": "function",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "func": "var query = {\n    \"selector\":{\n        \"docType\":{\"$eq\": \"settings\"}\n    }\n}\nmsg.payload = query;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 700,
+        "y": 860,
+        "wires": [
+            [
+                "782400e2.ee439"
+            ]
+        ]
+    },
+    {
+        "id": "cd207df6.9559a",
+        "type": "debug",
+        "z": "3cfae1ad.e2562e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "7dd76497.68c2bc",
+        "type": "link in",
+        "z": "3cfae1ad.e2562e",
+        "name": "from api",
+        "links": [
+            "d9ac3371.6b378",
+            "ce9841e4.4ada5",
+            "1baf9d0e.f3ed13",
+            "99d9053.d729ff8",
+            "a48220b4.8e632"
+        ],
+        "x": 155,
+        "y": 460,
+        "wires": [
+            [
+                "6f8fe0fc.4b1be",
+                "43610218.f0237c"
+            ]
+        ]
+    },
+    {
+        "id": "43610218.f0237c",
+        "type": "moment",
+        "z": "3cfae1ad.e2562e",
+        "name": "Get KL current date time",
+        "topic": "",
+        "input": "",
+        "inputType": "date",
+        "inTz": "Asia/Kuala_Lumpur",
+        "adjAmount": 0,
+        "adjType": "days",
+        "adjDir": "add",
+        "format": "DD/MM/YYYY, hh:mm:ss a",
+        "locale": "en-US",
+        "output": "",
+        "outputType": "msg",
+        "outTz": "Asia/Kuala_Lumpur",
+        "x": 390,
+        "y": 460,
+        "wires": [
+            [
+                "3d780d26.c9bfb2"
+            ]
+        ]
+    },
+    {
+        "id": "89ef28e6.4ac598",
+        "type": "cloudantplus",
+        "host": "${INSECT_DB}",
+        "name": "insectDB Host"
+    }
+]

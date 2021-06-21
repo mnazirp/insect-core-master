@@ -1,0 +1,76 @@
+name: Build Docker container for transitional backend K8S deployment
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  dockerbackend:
+    name: Build and store backend docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Backend
+        uses: actions/checkout@v2
+      - run: npm install
+
+      - name: Setup Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Docker Hub login
+        uses: docker/login-action@v1        
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Heroku Registry login
+        uses: docker/login-action@v1        
+        with:
+          registry: registry.heroku.com
+          username: ${{ secrets.HEROKU_USERNAME }}
+          password: ${{ secrets.HEROKU_API_KEY }}    
+
+      - name: GitHub container Registry login 
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Build and Push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./ 
+          file: ./Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          push: true
+          tags: |
+            ghcr.io/insectos/insect-core:latest
+            ghcr.io/insectos/insect-core:master-${{ steps.date.outputs.date }}
+            registry.heroku.com/insectos/web
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Release to Heroku
+        id: heroku_release
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku container:login
+          heroku container:release --app insectos web
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

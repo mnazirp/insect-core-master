@@ -1,0 +1,763 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "InsectOS",
+        "version": "1.0.2",
+        "description": "Data and API model for Protenga's plant operation. Very much work in progress"
+    },
+    "paths": {
+        "/": {
+            "description": "Provides access to the API definition after authentication",
+            "get": {
+                "tags": [
+                    "Operations"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+
+                            }
+                        },
+                        "description": "Retrieve API Endpoints"
+                    }
+                },
+                "security": [
+                    {
+                        "DeviceBearer": [
+                        ]
+                    }
+                ],
+                "operationId": "info"
+            }
+        },
+        "/automationdefinitions": {
+            "summary": "Path used to manage the list of automationdefinitions.",
+            "description": "The REST endpoint/path used to list and create zero or more `AutomationDefinition` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
+            "get": {
+                "tags": [
+                    "Operations"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AutomationDefinition"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Successful response - returns an array of `AutomationDefinition` entities."
+                    }
+                },
+                "operationId": "getautomationdefinitions",
+                "summary": "List All automationdefinitions",
+                "description": "Gets a list of all `AutomationDefinition` entities."
+            },
+            "post": {
+                "requestBody": {
+                    "description": "A new `AutomationDefinition` to be created.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutomationDefinition"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "createAutomationDefinition",
+                "summary": "Create a AutomationDefinition",
+                "description": "Creates a new instance of a `AutomationDefinition`."
+            }
+        },
+        "/automationdefinitions/{automationdefinitionId}": {
+            "summary": "Path used to manage a single AutomationDefinition.",
+            "description": "The REST endpoint/path used to get, update, and delete single instances of an `AutomationDefinition`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
+            "get": {
+                "tags": [
+                    "Operations"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutomationDefinition"
+                                }
+                            }
+                        },
+                        "description": "Successful response - returns a single `AutomationDefinition`."
+                    }
+                },
+                "operationId": "getAutomationDefinition",
+                "summary": "Get a AutomationDefinition",
+                "description": "Gets the details of a single instance of a `AutomationDefinition`."
+            },
+            "put": {
+                "requestBody": {
+                    "description": "Updated `AutomationDefinition` information.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutomationDefinition"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "updateAutomationDefinition",
+                "summary": "Update a AutomationDefinition",
+                "description": "Updates an existing `AutomationDefinition`."
+            },
+            "delete": {
+                "responses": {
+                    "204": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "deleteAutomationDefinition",
+                "summary": "Delete a AutomationDefinition",
+                "description": "Deletes an existing `AutomationDefinition`."
+            },
+            "parameters": [
+                {
+                    "name": "automationdefinitionId",
+                    "description": "A unique identifier for a `AutomationDefinition`.",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "in": "path",
+                    "required": true
+                }
+            ]
+        },
+        "/measurementbaselines": {
+            "get": {
+                "tags": [
+                    "Operations",
+                    "Offline"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of base lines"
+                    }
+                },
+                "security": [
+                    {
+                        "DeviceBearer": [
+                        ]
+                    }
+                ]
+            }
+        },
+        "/automationevents": {
+            "summary": "Path used to manage the list of automationevents.",
+            "description": "The REST endpoint/path used to list and create zero or more `AutomationEvent` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively.",
+            "get": {
+                "tags": [
+                    "Operations"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AutomationEvent"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Successful response - returns an array of `AutomationEvent` entities."
+                    }
+                },
+                "operationId": "getautomationevents",
+                "summary": "List All automationevents",
+                "description": "Gets a list of all `AutomationEvent` entities."
+            },
+            "post": {
+                "requestBody": {
+                    "description": "A new `AutomationEvent` to be created.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutomationEvent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "createAutomationEvent",
+                "summary": "Create a AutomationEvent",
+                "description": "Creates a new instance of a `AutomationEvent`."
+            }
+        },
+        "/automationevents/{automationeventId}": {
+            "summary": "Path used to manage a single AutomationEvent.",
+            "description": "The REST endpoint/path used to get, update, and delete single instances of an `AutomationEvent`.  This path contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks, respectively.",
+            "get": {
+                "tags": [
+                    "Operations"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutomationEvent"
+                                }
+                            }
+                        },
+                        "description": "Successful response - returns a single `AutomationEvent`."
+                    }
+                },
+                "operationId": "getAutomationEvent",
+                "summary": "Get a AutomationEvent",
+                "description": "Gets the details of a single instance of a `AutomationEvent`."
+            },
+            "put": {
+                "requestBody": {
+                    "description": "Updated `AutomationEvent` information.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutomationEvent"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "updateAutomationEvent",
+                "summary": "Update a AutomationEvent",
+                "description": "Updates an existing `AutomationEvent`."
+            },
+            "delete": {
+                "responses": {
+                    "204": {
+                        "description": "Successful response."
+                    }
+                },
+                "operationId": "deleteAutomationEvent",
+                "summary": "Delete a AutomationEvent",
+                "description": "Deletes an existing `AutomationEvent`."
+            },
+            "parameters": [
+                {
+                    "name": "automationeventId",
+                    "description": "A unique identifier for a `AutomationEvent`.",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "in": "path",
+                    "required": true
+                }
+            ]
+        }
+    },
+    "components": {
+        "schemas": {
+            "TimeStamp": {
+                "format": "date-time",
+                "description": "Use to record creation, update and resolution time. Unix/Linux Epoch",
+                "type": "string",
+                "example": "\"1591878749\""
+            },
+            "UUID": {
+                "description": "Universal ID of a record, unique across system",
+                "type": "string",
+                "example": "\"9a83fb9e-3597-4ef4-b078-e59fd9d63e59\""
+            },
+            "OperatorID": {
+                "description": "Unique ID of the operator, can be a human or a machine.\nUse a human readable format, not a UUI",
+                "type": "string",
+                "example": "\"joe\""
+            },
+            "MeasurementDefinition": {
+                "title": "Root Type for MeasurementDefinition",
+                "description": "Describes all measurement that the system will use to capture operational values.\nFeeds into StateEngine for Automation events",
+                "required": [
+                    "UUID",
+                    "frequency"
+                ],
+                "type": "object",
+                "properties": {
+                    "UUID": {
+                        "$ref": "#/components/schemas/UUID"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "frequency": {
+                        "description": "minute, day, hour etc",
+                        "enum": [
+                            "minute",
+                            "second",
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string"
+                    },
+                    "frequencyUnit": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "UUID": "9a83fb9e-3597-4ef4-b078-e59fd9d63e59",
+                    "name": "PC Pulpa",
+                    "type": "weight",
+                    "location": "PC 23",
+                    "frequency": "1",
+                    "frequencyUnit": "day",
+                    "unit": "kg"
+                }
+            },
+            "Measurement": {
+                "title": "Root Type for Measurement",
+                "description": "Actual measurement, automatic or manual",
+                "required": [
+                    "TimeStamp",
+                    "Value",
+                    "UUID",
+                    "OperatorUUID"
+                ],
+                "type": "object",
+                "properties": {
+                    "UUID": {
+                        "$ref": "#/components/schemas/UUID",
+                        "description": "UUID of a specific measurement event"
+                    },
+                    "TimeStamp": {
+                        "$ref": "#/components/schemas/TimeStamp",
+                        "description": "When the measurement is taken"
+                    },
+                    "OperatorUUID": {
+                        "$ref": "#/components/schemas/UUID"
+                    },
+                    "MeasurementPoint": {
+                        "description": "Physial location/position in the process chain (move to MD?)",
+                        "type": "string"
+                    },
+                    "BaselineDefinition": {
+                        "type": "string"
+                    },
+                    "Value": {
+                        "format": "int32",
+                        "description": "Actual measurement - weight, temp, humidity etc.",
+                        "type": "integer"
+                    },
+                    "Range": {
+                        "type": "string"
+                    },
+                    "ActionStatus": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "UUID": "UUID",
+                    "TimeStamp": "A timee stamp",
+                    "OperatorUUID": "UUID",
+                    "MeasurementPoint": "UUID",
+                    "BaselineDefinition": "UUID",
+                    "Value": 23,
+                    "Range": "onTarget",
+                    "ActionStatus": "new",
+                    "Type": "MeasurementDefinitionNeonate"
+                }
+            },
+            "AutomationDefinition": {
+                "title": "Root Type for AutomationDefinition",
+                "description": "Reaction based on a measurement Event",
+                "type": "object",
+                "properties": {
+                    "UUID": {
+                        "type": "string"
+                    },
+                    "MeasurementBaseLine": {
+                        "type": "string"
+                    },
+                    "Segment": {
+                        "type": "string"
+                    },
+                    "Type": {
+                        "type": "string"
+                    },
+                    "Action": {
+                        "type": "string"
+                    },
+                    "ValidFrom": {
+                        "type": "string"
+                    },
+                    "ValidUntil": {
+                        "type": "string"
+                    },
+                    "Label": {
+                        "type": "string"
+                    },
+                    "Description": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "UUID": "UUID",
+                    "MeasurementBaseLine": "UUID",
+                    "Segment": "OnTarget",
+                    "Type": "manual",
+                    "Action": "UUID",
+                    "ValidFrom": "TimeStamp",
+                    "ValidUntil": "TimeStamp",
+                    "Label": "Normal|Critical|Urgent",
+                    "Description": "What is is about"
+                }
+            },
+            "AutomationEvent": {
+                "title": "Root Type for AutomationEvent",
+                "description": "Action triggered by evaluating a measurement event",
+                "type": "object",
+                "properties": {
+                    "UUID": {
+                        "type": "string"
+                    },
+                    "Created": {
+                        "type": "string"
+                    },
+                    "Measurement": {
+                        "type": "string"
+                    },
+                    "AutomationDefinion": {
+                        "type": "string"
+                    },
+                    "Status": {
+                        "type": "string"
+                    },
+                    "Completed": {
+                        "type": "string"
+                    },
+                    "Header": {
+                        "$ref": "#/components/schemas/CloudEventHeader",
+                        "description": ""
+                    }
+                },
+                "example": {
+                    "UUID": "UUID",
+                    "Created": "TimeStamp",
+                    "Measurement": "UUID",
+                    "AutomationDefinion": "UUID",
+                    "Status": "New",
+                    "Completed": "TimeStamp"
+                }
+            },
+            "MeasurementExpectedValues": {
+                "title": "Root Type for MeasurementBaseLine",
+                "description": "Definition of an actual measurement at a specific location",
+                "type": "object",
+                "properties": {
+                    "UUID": {
+                        "type": "string"
+                    },
+                    "MeasurementDefinition": {
+                        "type": "string"
+                    },
+                    "MeasurementPoint": {
+                        "type": "string"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "isActive": {
+                        "type": "boolean"
+                    },
+                    "MinBoundary": {
+                        "format": "double",
+                        "type": "number"
+                    },
+                    "LowerBoundary": {
+                        "format": "double",
+                        "type": "number"
+                    },
+                    "UpperBoundary": {
+                        "format": "double",
+                        "type": "number"
+                    },
+                    "MaxBoundary": {
+                        "format": "double",
+                        "type": "number"
+                    },
+                    "activeSince": {
+                        "type": "string"
+                    },
+                    "activeUntil": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "UUID": "UUID",
+                    "MeasurementDefinition": "DefinitionUUID",
+                    "MeasurementPoint": "Point",
+                    "Name": "Name",
+                    "isActive": true,
+                    "MinBoundary": 0.3,
+                    "LowerBoundary": 1.2,
+                    "UpperBoundary": 3.7,
+                    "MaxBoundary": 5.4,
+                    "activeSince": "A DateTime",
+                    "activeUntil": "A DateTime"
+                }
+            },
+            "CloudEventHeader": {
+                "title": "Root Type for CloudEventHeader",
+                "description": "To be compliant with CloudEvents",
+                "type": "object",
+                "properties": {
+                    "specversion": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "subject": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "format": "date-time",
+                        "type": "string"
+                    },
+                    "comexampleextension1": {
+                        "type": "string"
+                    },
+                    "comexampleothervalue": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "datacontenttype": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "specversion": "1.0",
+                    "type": "com.github.pull.create",
+                    "source": "https://github.com/cloudevents/spec/pull",
+                    "subject": "123",
+                    "id": "A234-1234-1234",
+                    "time": "2018-04-05T17:31:00Z",
+                    "comexampleextension1": "value",
+                    "comexampleothervalue": 5,
+                    "datacontenttype": "text/json"
+                }
+            },
+            "PulpaMasurement": {
+                "title": "Root Type for PulpaMasurement",
+                "description": "Result of a measurement in the PC, waight of new monads",
+                "type": "object",
+                "properties": {
+                    "BatchID": {
+                        "type": "string"
+                    },
+                    "OperatorID": {
+                        "type": "string"
+                    },
+                    "Timestamp": {
+                        "type": "string"
+                    },
+                    "MeasurementDefinition": {
+                        "type": "string"
+                    },
+                    "Trays": {
+                        "format": "int32",
+                        "type": "integer"
+                    },
+                    "Weight": {
+                        "format": "int32",
+                        "type": "integer"
+                    }
+                },
+                "example": {
+                    "BatchID": "09283912",
+                    "OperatorID": "asjdoisa",
+                    "Timestamp": "some date",
+                    "MeasurementDefinition": "UUID",
+                    "Trays": 4,
+                    "Weight": 45
+                }
+            },
+            "TotalNeonateWeight": {
+                "title": "Root Type for TotalNeonateWeight",
+                "description": "To record the total weight of neonates collected on the day",
+                "required": [
+                    "OperatorID"
+                ],
+                "type": "object",
+                "properties": {
+                    "NeonateWeight": {
+                        "type": "integer"
+                    },
+                    "RecordingPoint": {
+                        "type": "string"
+                    },
+                    "RecordingFrequency": {
+                        "type": "integer"
+                    },
+                    "ParameterType": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "Batch ID": {
+                        "type": "string"
+                    },
+                    "Timestamp": {
+                        "type": "string"
+                    },
+                    "OperatorID": {
+                        "$ref": "#/components/schemas/OperatorID"
+                    },
+                    "RecordingUnit": {
+                        "description": "",
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "NeonateWeight": 30,
+                    "RecordingUnit": "kg",
+                    "RecordingPoint": "where recorded",
+                    "RecordingFrequency": 1,
+                    "ParameterType": [
+                        "Production",
+                        "Biological"
+                    ],
+                    "Batch ID": "200606",
+                    "Timestamp": "YYYYMMDDHHSS",
+                    "OperatorID": "vivien"
+                }
+            },
+            "Operator": {
+                "description": "",
+                "required": [
+                    "OperatorId",
+                    "Name",
+                    "OperatorType"
+                ],
+                "type": "object",
+                "properties": {
+                    "OperatorId": {
+                        "$ref": "#/components/schemas/OperatorID",
+                        "description": ""
+                    },
+                    "Name": {
+                        "description": "",
+                        "type": "string"
+                    },
+                    "OperatorType": {
+                        "description": "A operator can be a person ao something automatic like temperature measurement or adjustment",
+                        "enum": [
+                            "Person",
+                            "Measure",
+                            "Actuator"
+                        ],
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "501notImplemented": {
+                "description": "Notification for defined but yet unavailable operations"
+            },
+            "404Notfound": {
+                "description": "Operatio attempted on unknown ID"
+            },
+            "401forbidden": {
+                "description": "endpoint not alloed with this authentication"
+            },
+            "201Created": {
+                "content": {
+                    "application/json": {
+
+                    }
+                },
+                "description": "Succcessful creation of record"
+            }
+        },
+        "securitySchemes": {
+            "DeviceBearer": {
+                "scheme": "bearer",
+                "type": "http",
+                "description": "Device authenticate using a Bearer Token"
+            }
+        }
+    },
+    "security": [
+        {
+            "DeviceBearer": [
+            ]
+        }
+    ],
+    "tags": [
+        {
+            "name": "Hatchery",
+            "description": "APIs related to hatchery operation"
+        },
+        {
+            "name": "Pupation",
+            "description": ""
+        },
+        {
+            "name": "Growout",
+            "description": ""
+        },
+        {
+            "name": "Preparation",
+            "description": ""
+        },
+        {
+            "name": "Offline",
+            "description": "Must operate without internet connection"
+        },
+        {
+            "name": "Operations",
+            "description": "All Meta information"
+        }
+    ]
+}
